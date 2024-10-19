@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails{
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -55,25 +55,22 @@ public class User implements UserDetails{
         this.email = email;
     }
 
-  
     @Override
     public String getPassword() {
-        
+
         return password;
     }
 
- 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        
+
         return List.of();
     }
 
     @Override
     public String getUsername() {
-        
+
         return email;
     }
 
-   
 }

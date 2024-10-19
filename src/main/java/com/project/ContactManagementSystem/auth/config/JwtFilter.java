@@ -1,4 +1,5 @@
 package com.project.ContactManagementSystem.auth.config;
+
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +18,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
 @Component
 public class JwtFilter extends OncePerRequestFilter {
+
     @Autowired
     private JwtService jwtService;
     @Autowired
@@ -53,7 +54,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
             }
             filterChain.doFilter(request, response);
-        
 
         } catch (ServletException | IOException e) {
             throw new RuntimeException(e);
