@@ -19,8 +19,7 @@ import com.project.ContactManagementSystem.auth.service.MyUserDetailsService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    
-    
+
     @Autowired
     private MyUserDetailsService myservice;
     @Autowired
@@ -29,23 +28,19 @@ public class SecurityConfig {
     @Bean
     @SuppressWarnings("unused")
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http     
-        
+        http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/login", "/signup")
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated())
-                        
-                        .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .requestMatchers("/login", "/signup")
+                .permitAll()
+                .anyRequest()
+                .authenticated())
+                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-                         
         return http.build();
     }
 
-    
     @Bean
     BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(5);
@@ -63,7 +58,7 @@ public class SecurityConfig {
 
         authProvider.setUserDetailsService(myservice);
         authProvider.setPasswordEncoder(passwordEncoder());
-       
+
         return authProvider;
 
     }
