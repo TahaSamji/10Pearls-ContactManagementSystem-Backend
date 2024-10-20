@@ -9,6 +9,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.project.ContactManagementSystem.auth.customexceptions.UserNotFoundException;
 import com.project.ContactManagementSystem.auth.models.User;
 import com.project.ContactManagementSystem.auth.repositories.AuthRepository;
 import com.project.ContactManagementSystem.auth.service.JwtService;
@@ -44,7 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 User userDetails = authRepository.findByEmail(userEmail)
-                        .orElseThrow(() -> new RuntimeException("User not found"));
+                        .orElseThrow(() -> new UserNotFoundException("User not found"));
                 if (jwtService.validateToken(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
                             null, userDetails.getAuthorities());

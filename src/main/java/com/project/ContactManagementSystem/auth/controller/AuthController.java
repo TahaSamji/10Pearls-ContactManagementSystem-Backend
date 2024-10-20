@@ -38,8 +38,6 @@ public class AuthController {
 
     @PostMapping("/ChangePassword")
     public ResponseEntity<Response> ChangePassword(@RequestBody ChangePassRequest change_request, @RequestHeader("Authorization") String authorizationHeader) {
-        System.out.println(change_request.getOldPassword());
-        System.out.println(change_request.getNewPassword());
         String token = authorizationHeader.replace("Bearer ", "");
         Response confirmation = authService.ChangePass(change_request, token);
         return new ResponseEntity<>(confirmation, HttpStatus.OK);
