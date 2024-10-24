@@ -13,6 +13,8 @@ import com.project.ContactManagementSystem.auth.models.User;
 import com.project.ContactManagementSystem.auth.repositories.AuthRepository;
 import com.project.ContactManagementSystem.dto.Response;
 
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -26,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public User saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        
         return authRepository.save(user);
     }
 
@@ -37,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
             String GeneratedToken = jwtService.generateToken(user);
             return AuthMapper.UserToLoginResponse(user, true, "Success", GeneratedToken);
         } else {
+            log.error("Invalid Credentials");
             throw new InvalidCredentialsException("Invalid Credentials");
         }
     }
@@ -49,8 +53,11 @@ public class AuthServiceImpl implements AuthService {
         if (passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
             authRepository.save(user);
+            
             confirmation.setMessage("Password has been Changed");
+            log.info("Password has been Changed");
         } else {
+            log.error("Old Password is Incorrect");
            throw new InvalidCredentialsException("Old Password is Incorrect");
         }
         return confirmation;

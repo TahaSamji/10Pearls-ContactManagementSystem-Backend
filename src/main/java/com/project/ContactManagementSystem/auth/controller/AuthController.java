@@ -45,7 +45,6 @@ public class AuthController {
 
     @GetMapping("/Test")
     public String Hello(@RequestHeader("Authorization") String authorizationHeader) {
-
         return "Test";
     }
 
