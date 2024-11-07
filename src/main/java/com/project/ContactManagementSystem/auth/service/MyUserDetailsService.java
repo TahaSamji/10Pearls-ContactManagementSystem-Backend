@@ -13,8 +13,12 @@ import com.project.ContactManagementSystem.auth.repositories.AuthRepository;
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 
-    @Autowired
+
     public AuthRepository authRepository;
+
+    public MyUserDetailsService(AuthRepository authRepository) {
+        this.authRepository = authRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

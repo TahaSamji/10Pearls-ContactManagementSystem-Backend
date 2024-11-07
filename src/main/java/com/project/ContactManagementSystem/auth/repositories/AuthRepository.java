@@ -11,4 +11,6 @@ import com.project.ContactManagementSystem.auth.models.User;
 public interface AuthRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
+    User findByemail(String email);
+
 }

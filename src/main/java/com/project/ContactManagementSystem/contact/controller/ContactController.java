@@ -10,28 +10,37 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 public class ContactController {
 
-    @Autowired
-    ContactService contactService;
+
+
+    private final ContactService contactService;
+
+    public ContactController(ContactService contactService){
+        this.contactService = contactService;
+    }
+
     @PostMapping("/addcontact")
-    public String AddContact(@RequestBody ContactProfile contact,@RequestHeader("Authorization") String authorizationHeader) {
+    public String AddContact(@RequestBody Contactdto contact,@RequestHeader("Authorization") String authorizationHeader) {
         String token = authorizationHeader.replace("Bearer ", "");
         contactService.SaveContact(contact,token);
         return "Contact Created Successfully";
     }
+
     @GetMapping("/showcontacts")
-    public List<Contactdto> ShowContacts(@RequestHeader("Authorization") String authorizationHeader) {
+    public List<ContactProfile> ShowContacts(@RequestHeader("Authorization") String authorizationHeader,  @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "2") int pageSize) {
         String token = authorizationHeader.replace("Bearer ", "");
-       List<Contactdto> contacts  = contactService.ViewMyContacts(token);
+       List<ContactProfile> contacts  = contactService.ViewMyContacts(token,pageNo,pageSize);
         return contacts;
     }
     @PostMapping("/updatecontact")
-    public ResponseEntity<ContactProfile> UpdateContact(@RequestBody ContactProfile contact,@RequestParam(name ="contactId") long contactId) {
+    public ResponseEntity<ContactProfile> UpdateContact(@RequestBody Contactdto contact,@RequestParam(name ="contactId") long contactId) {
         ContactProfile UpdatedContact = contactService.UpdateContact(contact,contactId);
         return new ResponseEntity<>(UpdatedContact, HttpStatus.OK);
     }
@@ -44,6 +53,15 @@ public class ContactController {
     public ResponseEntity<List<ContactProfile>> SearchContact(@RequestParam(name ="value") String value,@RequestParam(name ="userId") long userId) {
         List<ContactProfile> MySearch = contactService.SearchContact(value,userId);
         return new ResponseEntity<>(MySearch, HttpStatus.OK);
+    }
+    @GetMapping("/contactexport")
+    public ResponseEntity<byte[]> ExportContact(@RequestParam(name ="userId") long userId) {
+        return  contactService.ExportContact(userId);
+    }
+    @GetMapping("/contactimport")
+    public ResponseEntity<Response> ImportContact(@RequestParam("file") MultipartFile file, @RequestParam("userId") long userId) throws IOException {
+
+        return  contactService.importContact(file,userId);
     }
 
 }

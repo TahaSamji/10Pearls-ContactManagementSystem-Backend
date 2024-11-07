@@ -8,9 +8,13 @@ import lombok.Data;
 public class Contactdto {
     private String firstName;
     private String lastName;
-    private String emailAddress;
+    private String workEmailAddress;
+    private String personalEmailAddress;
+    private String otherEmailAddress;
     private long profileId;
-    private long phoneNumber;
+    private long homePhoneNumber;
+    private long personalPhoneNumber;
+    private long workPhoneNumber;
     private String title;
 
 }
