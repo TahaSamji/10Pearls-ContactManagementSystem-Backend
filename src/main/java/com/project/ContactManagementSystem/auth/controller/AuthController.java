@@ -20,8 +20,10 @@ import com.project.ContactManagementSystem.dto.Response;
 @RestController()
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
+    public  AuthController(AuthService authService){
+        this.authService = authService;
+    }
 
     @PostMapping("/signup")
     public String CreateUser(@RequestBody User user) {

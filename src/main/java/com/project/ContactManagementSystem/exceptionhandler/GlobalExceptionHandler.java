@@ -1,5 +1,6 @@
 package com.project.ContactManagementSystem.exceptionhandler;
 
+import com.project.ContactManagementSystem.auth.customexceptions.UserAlreadyExistsException;
 import com.project.ContactManagementSystem.contact.customexceptions.ContactNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -30,4 +31,10 @@ public class GlobalExceptionHandler {
     public @ResponseBody ErrorResponse handleException(ContactNotFoundException e) {
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
     }
+    @ExceptionHandler(value = UserAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public @ResponseBody ErrorResponse handleException(UserAlreadyExistsException e) {
+        return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+    }
+
 }

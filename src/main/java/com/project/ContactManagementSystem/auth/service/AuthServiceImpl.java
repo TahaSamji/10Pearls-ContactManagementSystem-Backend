@@ -1,5 +1,6 @@
 package com.project.ContactManagementSystem.auth.service;
 
+import com.project.ContactManagementSystem.auth.customexceptions.UserAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,17 +19,28 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    @Autowired
-    private AuthRepository authRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private JwtService jwtService;
+
+    private final AuthRepository authRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+
+    public AuthServiceImpl(AuthRepository authRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+        this.authRepository = authRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+    }
+
+
 
     @Override
     public User saveUser(User user) {
+        User userExists = authRepository.findByemail(user.getEmail());
+        if(userExists != null){
+            log.error("User Already exist in the database");
+            throw new UserAlreadyExistsException("User already Exists. Try Signing in!");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        
+        log.info("User Saved");
         return authRepository.save(user);
     }
 
@@ -38,6 +50,7 @@ public class AuthServiceImpl implements AuthService {
 
         if (passwordEncoder.matches(inputUser.getPassword(), user.getPassword())) {
             String GeneratedToken = jwtService.generateToken(user);
+
             return AuthMapper.UserToLoginResponse(user, true, "Success", GeneratedToken);
         } else {
             log.error("Invalid Credentials");
