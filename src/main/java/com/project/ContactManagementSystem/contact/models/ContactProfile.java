@@ -40,4 +40,12 @@ public class ContactProfile {
         this.emailAddresses = emailAddresses;
         this.user = user;
     }
+
+    public ContactProfile(long profileId, String firstName, String lastName, String title,User user) {
+        this.profileId  = profileId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.title = title;
+        this.user= user;
+    }
 }

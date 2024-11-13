@@ -39,18 +39,21 @@ public class AuthServiceImpl implements AuthService {
             log.error("User Already exist in the database");
             throw new UserAlreadyExistsException("User already Exists. Try Signing in!");
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        log.info("User Saved");
-        return authRepository.save(user);
+
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            log.info("User Saved");
+            authRepository.save(user);
+
+
+
+        return user;
     }
 
     @Override
     public LoginResponse login(User inputUser) {
         User user = authRepository.findByEmail(inputUser.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found"));
-
         if (passwordEncoder.matches(inputUser.getPassword(), user.getPassword())) {
             String GeneratedToken = jwtService.generateToken(user);
-
             return AuthMapper.UserToLoginResponse(user, true, "Success", GeneratedToken);
         } else {
             log.error("Invalid Credentials");

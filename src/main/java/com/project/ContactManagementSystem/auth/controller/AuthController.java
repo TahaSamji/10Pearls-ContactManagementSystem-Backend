@@ -26,9 +26,8 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public String CreateUser(@RequestBody User user) {
-        authService.saveUser(user);
-        return "User Created Successfully";
+    public User CreateUser(@RequestBody User user) {
+        return authService.saveUser(user);
     }
 
     @PostMapping("/login")
