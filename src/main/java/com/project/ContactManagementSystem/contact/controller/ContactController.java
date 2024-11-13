@@ -20,11 +20,12 @@ public class ContactController {
 
 
 
-    private final ContactService contactService;
+    private  ContactService contactService;
 
     public ContactController(ContactService contactService){
         this.contactService = contactService;
     }
+
 
     @PostMapping("/addcontact")
     public String AddContact(@RequestBody Contactdto contact,@RequestHeader("Authorization") String authorizationHeader) {
@@ -34,24 +35,23 @@ public class ContactController {
     }
 
     @GetMapping("/showcontacts")
-    public List<ContactProfile> ShowContacts(@RequestHeader("Authorization") String authorizationHeader,  @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "2") int pageSize) {
-        String token = authorizationHeader.replace("Bearer ", "");
-       List<ContactProfile> contacts  = contactService.ViewMyContacts(token,pageNo,pageSize);
-        return contacts;
+    public List<ContactProfile> ShowContacts(@RequestParam(name ="userId",defaultValue = "1") long userId,@RequestParam(name ="value",defaultValue = "") String value, @RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "2") int pageSize) {
+        return    contactService.ViewMyContacts(userId,value,pageNo,pageSize);
     }
     @PostMapping("/updatecontact")
     public ResponseEntity<ContactProfile> UpdateContact(@RequestBody Contactdto contact,@RequestParam(name ="contactId") long contactId) {
+
         ContactProfile UpdatedContact = contactService.UpdateContact(contact,contactId);
         return new ResponseEntity<>(UpdatedContact, HttpStatus.OK);
     }
-    @DeleteMapping("/delectcontact")
+    @PostMapping("/delectcontact")
     public ResponseEntity<ContactProfile> DeleteContact(@RequestParam(name ="contactId") long contactId) {
         ContactProfile deletedProduct = contactService.DeleteContact(contactId);
         return new ResponseEntity<>(deletedProduct, HttpStatus.OK);
     }
     @GetMapping("/searchcontacts")
-    public ResponseEntity<List<ContactProfile>> SearchContact(@RequestParam(name ="value") String value,@RequestParam(name ="userId") long userId) {
-        List<ContactProfile> MySearch = contactService.SearchContact(value,userId);
+    public ResponseEntity<List<ContactProfile>> SearchContact(@RequestParam(name ="value") String value,@RequestParam(name ="userId") long userId,@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "2") int pageSize) {
+        List<ContactProfile> MySearch = contactService.SearchContact(value,userId,pageNo,pageSize);
         return new ResponseEntity<>(MySearch, HttpStatus.OK);
     }
     @GetMapping("/contactexport")

@@ -18,6 +18,7 @@ import ezvcard.parameter.TelephoneType;
 import ezvcard.property.Email;
 import ezvcard.property.FormattedName;
 import ezvcard.property.Telephone;
+import ezvcard.property.Title;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -38,11 +39,11 @@ import java.util.Locale;
 public class ContactServiceImpl  implements ContactService{
 
 
-    private final ContactRepository contactRepository;
+    private  ContactRepository contactRepository;
 
-    private final AuthRepository authRepository;
+    private  AuthRepository authRepository;
 
-    private final JwtService jwtService;
+    private  JwtService jwtService;
 
     public ContactServiceImpl(ContactRepository contactRepository, AuthRepository authRepository, JwtService jwtService) {
         this.contactRepository = contactRepository;
@@ -50,8 +51,11 @@ public class ContactServiceImpl  implements ContactService{
         this.jwtService = jwtService;
     }
 
+
     @Override
     public ContactProfile SaveContact(Contactdto contact,String token) {
+        log.info(String.valueOf(contact));
+        log.info(token);
        String email  = jwtService.extractUserName(token);
        User user = authRepository.findByEmail(email).orElseThrow( ()->new UserNotFoundException("User Not Found"));
 
@@ -63,15 +67,20 @@ public class ContactServiceImpl  implements ContactService{
     }
 
     @Override
-    public List<ContactProfile> ViewMyContacts(String token,int pageNo, int pageSize) {
-        String email  = jwtService.extractUserName(token);
-        User user = authRepository.findByEmail(email).orElseThrow( ()->new UserNotFoundException("User Not Found"));
+    public List<ContactProfile> ViewMyContacts(long userId,String value,int pageNo, int pageSize) {
+
+        User user = authRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User Not Found"));
         Pageable pageable = PageRequest.of(pageNo, pageSize);
+        if(value.isEmpty()) {
 
-        List<ContactProfile>  contacts = contactRepository.findAllByUser(user,pageable);
+           return contactRepository.findAllByUser(user, pageable);
+       }
+        String  LowerCaseValue = value.toLowerCase(Locale.ROOT);
 
+        List<ContactProfile> MySearch = contactRepository.search(LowerCaseValue,user.getId(),pageable);
+        log.info("Search Completed Returning Result ");
+        return MySearch;
 
-        return contacts;
     }
 
     @Override
@@ -100,11 +109,12 @@ public class ContactServiceImpl  implements ContactService{
     }
 
     @Override
-    public List<ContactProfile> SearchContact(String value,long userId) {
+    public List<ContactProfile> SearchContact(String value,long userId,int pageNo, int pageSize) {
     String  LowerCaseValue = value.toLowerCase(Locale.ROOT);
+    Pageable pageable = PageRequest.of(pageNo, pageSize);
 
-       List<ContactProfile> MySearch = contactRepository.search(LowerCaseValue,userId);
-        log.info("Search Completed Returning Result ");
+       List<ContactProfile> MySearch = contactRepository.search(LowerCaseValue,userId,pageable);
+//        log.info("Search Completed Returning Result ");
         return MySearch;
     }
 
@@ -115,6 +125,7 @@ public class ContactServiceImpl  implements ContactService{
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         for (ContactProfile contactProfile : contacts) {
             VCard card = new VCard();
+
             card.addProperty(new FormattedName(contactProfile.getFirstName() + " " +contactProfile.getLastName()));
             Email personalEmail = new Email(contactProfile.getEmailAddresses().getPersonalEmail());
             personalEmail.getTypes().add(EmailType.HOME);
@@ -122,6 +133,7 @@ public class ContactServiceImpl  implements ContactService{
             Email workEmail = new Email(contactProfile.getEmailAddresses().getWorkEmail());
             workEmail.getTypes().add(EmailType.WORK);
             card.addProperty(workEmail);
+            card.addProperty(new Title(contactProfile.getTitle()));
 
             Telephone homeNumber = new Telephone(String.valueOf(contactProfile.getPhoneNumbers().getHomeNumber()));
             homeNumber.getTypes().add(TelephoneType.HOME);
@@ -167,6 +179,11 @@ public class ContactServiceImpl  implements ContactService{
                 String[] arr = names.getValue().split(" ");
                 contact.setFirstName(arr[0]);
                 contact.setLastName( arr[1]);
+            }
+
+            List<Title> titles =  vcard.getTitles();
+            if (!titles.isEmpty()) {
+                contact.setTitle(titles.getFirst().getValue());
             }
 
 

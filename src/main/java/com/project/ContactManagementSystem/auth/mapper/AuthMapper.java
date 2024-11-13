@@ -10,8 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthMapper {
 
     public static LoginResponse UserToLoginResponse(User user, boolean success, String message, String token) {
-        return new LoginResponse(user.getUsername(), success, message, token);
+        return new LoginResponse(user.getId(),user.getUsername(), success, message, token);
     }
+
+
+
 
     public static User LoginRequestToUser(LoginRequest loginRequest) {
 

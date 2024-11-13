@@ -19,8 +19,10 @@ public interface ContactRepository extends JpaRepository<ContactProfile, Long> {
               "AND (LOWER(c.firstName) LIKE %?1% " +
               "OR LOWER(c.lastName) LIKE %?1% " +
               "OR LOWER(c.title) LIKE %?1% )")
-      List<ContactProfile> search(String value,long userId);
+      List<ContactProfile> search(String value,long userId,Pageable pageable);
 
       List<ContactProfile> findAllByUser(User user, Pageable pageable);
       List<ContactProfile> findAllByUser(User user);
+
+
 }
