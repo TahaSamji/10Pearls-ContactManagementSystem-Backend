@@ -13,12 +13,14 @@ import java.util.Optional;
 @Repository
 public interface ContactRepository extends JpaRepository<ContactProfile, Long> {
 
-      Optional<ContactProfile> findById(long contactId);
-      @Query("SELECT c FROM ContactProfile c " +"WHERE c.user.id = ?2 "+
-              "AND (LOWER(c.firstName) LIKE %?1% " +
-              "OR (LOWER(c.lastName) LIKE %?1% OR LOWER(c.lastName) LIKE %?1) " +
-              "OR LOWER(c.title) LIKE %?1% )")
-      List<ContactProfile> search(String value,long userId,Pageable pageable);
+      @Query("SELECT c FROM ContactProfile c " +
+              "WHERE c.user.id = ?2 " +
+              "AND (LOWER(CONCAT(c.firstName, ' ', c.lastName)) LIKE %?1% " +
+              "OR LOWER(c.firstName) LIKE %?1% " +
+              "OR LOWER(c.lastName) LIKE %?1% " +
+              "OR LOWER(c.title) LIKE %?1%)")
+      List<ContactProfile> search(String value, long userId, Pageable pageable);
+
 
       List<ContactProfile> findAllByUser(User user, Pageable pageable);
       List<ContactProfile> findAllByUser(User user);
