@@ -87,7 +87,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     @Test
     void login_Success() throws Exception {
         String token = "jwttoken";
-        LoginResponse loginResponse = new LoginResponse(user.getId(),user.getEmail(),true,"Success", token);
+        LoginResponse loginResponse = new LoginResponse(user.getId(),user.getName(),user.getEmail(),true,"Success", token);
         LoginRequest loginRequest = new LoginRequest(user.getEmail(),user.getPassword());
         when(authService.login(any(User.class))).thenReturn(loginResponse);
 

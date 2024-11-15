@@ -15,7 +15,7 @@ public class AuthMapper {
 
     public static LoginResponse userToLoginResponse(User user, boolean success, String message, String token) {
         log.info("User Authenticated");
-        return new LoginResponse(user.getId(),user.getUsername(), success, message, token);
+        return new LoginResponse(user.getId(),user.getName(),user.getEmail(), success, message, token);
     }
 
 
