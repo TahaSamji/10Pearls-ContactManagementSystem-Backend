@@ -6,6 +6,7 @@ import java.util.List;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,67 +21,29 @@ import jakarta.persistence.Table;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
+@Data
 public class User implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
     @Column(name = "name")
     private String name;
-
     @Column(name = "password")
     @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
     @Email(message = "Invalid email format")
     @Column(name = "email")
-
     private String email;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     @Override
     public String getPassword() {
-
         return password;
     }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
         return List.of();
     }
-
     @Override
     public String getUsername() {
-
         return "username";
     }
 

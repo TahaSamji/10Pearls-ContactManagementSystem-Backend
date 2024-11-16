@@ -3,7 +3,9 @@ package com.project.contactmanagementsystem.authTests;
 import com.project.contactmanagementsystem.auth.customexceptions.InvalidCredentialsException;
 import com.project.contactmanagementsystem.auth.customexceptions.UserAlreadyExistsException;
 import com.project.contactmanagementsystem.auth.dto.ChangePassRequest;
+import com.project.contactmanagementsystem.auth.dto.LoginRequest;
 import com.project.contactmanagementsystem.auth.dto.LoginResponse;
+import com.project.contactmanagementsystem.auth.mapper.AuthMapper;
 import com.project.contactmanagementsystem.auth.models.User;
 import com.project.contactmanagementsystem.auth.repositories.AuthRepository;
 
@@ -72,7 +74,7 @@ import static org.mockito.Mockito.when;
         when(jwtService.generateToken(user)).thenReturn(token);
         LoginResponse loginResponse =   authService.login(userInput);
 
-        assertEquals(loginResponse.getEmail(),user.getUsername());
+        assertEquals(loginResponse.getEmail(),user.getEmail());
         assertEquals(token,loginResponse.getToken());
 
     }
@@ -116,5 +118,23 @@ import static org.mockito.Mockito.when;
 
         });
     }
+   @Test
+   void AuthMapperTest_Success() {
+
+      String email = "test@example.com";
+      String password = "password123";
+
+      LoginRequest request = new LoginRequest(email,password);
+
+
+      // Act
+      User newUser = AuthMapper.loginRequestToUser(request);
+
+      // Assert
+      assertNotNull(newUser);
+      assertEquals(email, newUser.getEmail());
+      assertEquals(password, newUser.getPassword());
+
+   }
 
 }

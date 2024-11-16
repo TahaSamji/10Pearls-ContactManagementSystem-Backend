@@ -25,7 +25,6 @@ import io.jsonwebtoken.security.Keys;
 public class JwtService {
 
     private String secretKey;
-
     public JwtService() {
         try {
 
@@ -80,12 +79,10 @@ public class JwtService {
     public boolean validateToken(String token, User userDetails) {
         final String userEmail = extractEmail(token);
         return (userEmail.equals(userDetails.getEmail()) && !isTokenExpired(token));
-
     }
 
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
-
     }
 
     private Date extractExpiration(String token) {

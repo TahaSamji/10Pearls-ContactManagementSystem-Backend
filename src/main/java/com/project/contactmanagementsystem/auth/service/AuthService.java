@@ -8,9 +8,7 @@ import com.project.contactmanagementsystem.dto.Response;
 public interface AuthService {
 
     public User saveUser(User user);
-
     public LoginResponse login(User inputUser);
-
     public Response changePass(ChangePassRequest request, String token);
 
 }

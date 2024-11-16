@@ -30,22 +30,16 @@ public class AuthServiceImpl implements AuthService {
         this.jwtService = jwtService;
     }
 
-
-
     @Override
     public User saveUser(User user) {
         User userExists = authRepository.findByemail(user.getEmail());
-
         if(userExists != null){
             log.error("User Already exist in the database");
             throw new UserAlreadyExistsException("User already Exists. Try Signing in!");
         }
-
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             log.info("User Saved");
             authRepository.save(user);
-
-
 
         return user;
     }
@@ -55,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
         User user = authRepository.findByEmail(inputUser.getEmail()).orElseThrow(UserNotFoundException::new);
         if (passwordEncoder.matches(inputUser.getPassword(), user.getPassword())) {
             String generatedToken = jwtService.generateToken(user);
-            return AuthMapper.userToLoginResponse(user, true, "Success", generatedToken);
+            return new LoginResponse(user.getId(),user.getName(),user.getEmail(), true, "Success", generatedToken);
         } else {
             log.error("Invalid Credentials");
             throw new InvalidCredentialsException("Invalid Credentials");
@@ -70,7 +64,6 @@ public class AuthServiceImpl implements AuthService {
         if (passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
             authRepository.save(user);
-            
             confirmation.setMessage("Password has been Changed");
             log.info("Password has been Changed");
         } else {

@@ -44,7 +44,6 @@ public class GlobalExceptionHandler {
     public @ResponseBody ErrorResponse handleValidationException(MethodArgumentNotValidException ex) {
         FieldError fieldError = ex.getBindingResult().getFieldError();
         if (fieldError != null) {
-
             return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), fieldError.getDefaultMessage());
         }
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Validation error");

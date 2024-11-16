@@ -129,7 +129,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         String token = "Bearer jwttoken";
         Response confirmation = new Response("Password has been Changed");
 
-        ChangePassRequest request = new ChangePassRequest("Old", "New");
+        ChangePassRequest request = new ChangePassRequest("Oldpassword", "NewPassword");
         when(authService.changePass(request, "jwttoken")).thenReturn(confirmation);
         String expectedResponseJson = objectMapper.writeValueAsString(confirmation);
 
@@ -148,9 +148,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         String token = "Bearer jwttoken";
 
         ErrorResponse response = new ErrorResponse(401,"Invalid Credentials");
+        ChangePassRequest request = new ChangePassRequest("Oldpassword", "NewPassword");
 
-        ChangePassRequest request = new ChangePassRequest("Old", "New");
+
         when(authService.changePass(request, "jwttoken")).thenThrow(new InvalidCredentialsException("Invalid Credentials"));
+
         String expectedResponseJson = objectMapper.writeValueAsString(response);
 
         String requestJson = objectMapper.writeValueAsString(request);

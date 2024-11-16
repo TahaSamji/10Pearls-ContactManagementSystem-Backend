@@ -16,12 +16,18 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
@@ -155,4 +161,27 @@ class ContactControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
         verify(contactService, times(1)).deleteContact(contact.getProfileId());
     }
+    @Test
+    void ImportContact_Failure() throws Exception {
+
+        String vcardContent = "BEGIN:VCARD\nVERSION:4.0\nFN:John Doe\nEMAIL;TYPE=HOME:john@example.com\nTEL;TYPE=CELL:1234567890\nEND:VCARD";
+        MockMultipartFile file = new MockMultipartFile("file", "contacts.vcf", "text/vcard", new ByteArrayInputStream(vcardContent.getBytes()));
+
+
+        when(contactService.contactImport(any(MockMultipartFile.class), anyLong())).thenThrow(new UserNotFoundException());
+
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/contactimport")
+                        .file(file)
+                        .param("userId", String.valueOf(user.getId()))
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("User Not found"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+
+        verify(contactService, times(1)).contactImport(any(MockMultipartFile.class), eq(user.getId()));
+    }
+
 }

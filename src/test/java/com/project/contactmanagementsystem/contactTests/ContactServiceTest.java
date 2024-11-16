@@ -55,8 +55,8 @@ import static org.mockito.Mockito.*;
         ContactProfile contact1 = new ContactProfile(1L, "John", "Doe", "john.doe@example.com", user);
         ContactProfile contact2 = new ContactProfile(2L, "Jane", "Smith", "jane.smith@example.com", user);
         List<ContactProfile> contactList = Arrays.asList(contact1, contact2);
-        Pageable pageable = PageRequest.of(0, 2);
 
+        Pageable pageable = PageRequest.of(0, 2);
         when(authRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(contactRepository.findAllByUser(user, pageable)).thenReturn(contactList);
 
@@ -67,9 +67,7 @@ import static org.mockito.Mockito.*;
     @Test
      void getAllContacts_Failure() {
 
-
         when(authRepository.findById(1L)).thenReturn(Optional.empty());
-
         assertThrows(UserNotFoundException.class, () -> {
             contactServiceImpl.viewMyContacts(1L, "", 0, 2);
         });
@@ -82,12 +80,11 @@ import static org.mockito.Mockito.*;
 
         ContactProfile contact2 = new ContactProfile(2L, "Jane", "Smith", "jane.smith@example.com", user);
         List<ContactProfile> expectedResult = List.of(contact2);
+
         Pageable pageable = PageRequest.of(0, 2);
 
         when(authRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(contactRepository.search("Jane".toLowerCase(),user.getId(),pageable)).thenReturn(expectedResult);
-
-
         List<ContactProfile> result = contactServiceImpl.viewMyContacts(1L, "Jane", 0, 2);
         assertEquals(expectedResult, result);
         assertEquals("Jane", result.getFirst().getFirstName());
@@ -139,7 +136,6 @@ import static org.mockito.Mockito.*;
 
         when(contactRepository.findById(contactId)).thenReturn(Optional.of(existingContact));
 
-
         ContactProfile result = contactServiceImpl.deleteContact(contactId);
         assertNotNull(result);
         assertEquals(contactId, result.getProfileId());
@@ -160,6 +156,7 @@ import static org.mockito.Mockito.*;
 
 
         verify(contactRepository, times(1)).findById(contactId);
+
         verify(contactRepository, never()).deleteById(contactId);
     }
 
@@ -232,6 +229,39 @@ import static org.mockito.Mockito.*;
       verify(authRepository, times(1)).findById(userId);
       verify(contactRepository, atLeastOnce()).save(any(ContactProfile.class));
    }
+   @Test
+   void contactImport_Failure() throws IOException {
+
+      long userId = 1L;
+
+      String vcardContent = "BEGIN:VCARD\nVERSION:4.0\nFN:John Doe\nEMAIL;TYPE=HOME:john@example.com\nTEL;TYPE=CELL:1234567890\nEND:VCARD";
+
+      MockMultipartFile file = new MockMultipartFile("file", "contacts.vcf", "text/vcard", new ByteArrayInputStream(vcardContent.getBytes()));
+      when(authRepository.findById(userId)).thenReturn(Optional.empty());
+
+      assertThrows(UserNotFoundException.class, () -> {
+         contactServiceImpl.contactImport(file, userId);
+      });
+
+      verify(authRepository, times(1)).findById(userId);
+
+      verify(contactRepository,never()).save(any(ContactProfile.class));
+   }
+   @Test
+   void contactExport_Failure() {
+
+      long userId = 1L;
+
+      when(authRepository.findById(userId)).thenReturn(Optional.empty());
+
+      assertThrows(UserNotFoundException.class, () -> {
+         contactServiceImpl.exportContact(userId);
+      });
+
+      verify(authRepository, times(1)).findById(userId);
+
+   }
+
 
 
 }

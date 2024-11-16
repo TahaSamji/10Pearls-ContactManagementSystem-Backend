@@ -13,14 +13,6 @@ public class AuthMapper {
         throw new UnsupportedOperationException("AuthMapper is a utility class and cannot be instantiated");
     }
 
-    public static LoginResponse userToLoginResponse(User user, boolean success, String message, String token) {
-        log.info("User Authenticated");
-        return new LoginResponse(user.getId(),user.getName(),user.getEmail(), success, message, token);
-    }
-
-
-
-
     public static User loginRequestToUser(LoginRequest loginRequest) {
 
         if (loginRequest.getEmail() == null || loginRequest.getPassword() == null) {
