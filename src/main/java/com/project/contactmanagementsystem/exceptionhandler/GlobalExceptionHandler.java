@@ -3,6 +3,8 @@ package com.project.contactmanagementsystem.exceptionhandler;
 import com.project.contactmanagementsystem.auth.customexceptions.UserAlreadyExistsException;
 import com.project.contactmanagementsystem.contact.customexceptions.ContactNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,6 +37,17 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public @ResponseBody ErrorResponse handleException(UserAlreadyExistsException e) {
         return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+    }
+
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public @ResponseBody ErrorResponse handleValidationException(MethodArgumentNotValidException ex) {
+        FieldError fieldError = ex.getBindingResult().getFieldError();
+        if (fieldError != null) {
+
+            return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), fieldError.getDefaultMessage());
+        }
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Validation error");
     }
 
 }

@@ -1,5 +1,8 @@
 package com.project.contactmanagementsystem.dto;
 
+import lombok.Data;
+
+@Data
 public class ErrorResponse {
 
     private int statusCode;
@@ -11,21 +14,7 @@ public class ErrorResponse {
         this.statusCode = statusCode;
     }
 
-    public int getStatusCode() {
-        return statusCode;
-    }
 
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 
     
 }

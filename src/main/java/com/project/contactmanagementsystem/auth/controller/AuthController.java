@@ -1,5 +1,6 @@
 package com.project.contactmanagementsystem.auth.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public  ResponseEntity<Response> createUser(@RequestBody User user) {
+    public  ResponseEntity<Response> createUser(@RequestBody  @Valid User user) {
         authService.saveUser(user);
         Response confirmation = new Response("Your account has been created");
         return new ResponseEntity<>(confirmation, HttpStatus.OK);
@@ -32,13 +33,13 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
         LoginResponse loginResponse = authService.login(AuthMapper.loginRequestToUser(loginRequest));
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
 
     @PostMapping("/ChangePassword")
-    public ResponseEntity<Response> changePassword(@RequestBody ChangePassRequest changeRequest, @RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<Response> changePassword(@RequestBody  @Valid  ChangePassRequest changeRequest, @RequestHeader("Authorization") String authorizationHeader) {
         String token = authorizationHeader.replace("Bearer ", "");
         Response confirmation = authService.changePass(changeRequest, token);
         return new ResponseEntity<>(confirmation, HttpStatus.OK);
